@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "taxi",
+	"version": "${version}",
+	"name": "OKAK Taxi",
+	"description": "Call a taxi from your map! A driver comes to pick you up and drives you to the marker you set - but only to places you have already been.",
+	"authors": [
+		"drartem34"
+	],
+	"contact": {
+		"sources": "https://github.com/drartem34/okak"
+	},
+	"license": "MIT",
+	"icon": "assets/taxi/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.okak.taxi.TaxiMod"
+		],
+		"client": [
+			"com.okak.taxi.client.TaxiModClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

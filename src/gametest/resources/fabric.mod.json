@@ -1,0 +1,16 @@
+{
+	"schemaVersion": 1,
+	"id": "taxi-gametest",
+	"version": "1.0.0",
+	"name": "OKAK Taxi Game Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-client-gametest": [
+			"com.okak.taxi.gametest.TaxiClientGameTest"
+		]
+	},
+	"depends": {
+		"taxi": "*",
+		"fabric-client-gametest-api-v1": "*"
+	}
+}
