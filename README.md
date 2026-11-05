@@ -1,6 +1,6 @@
 # OKAK Taxi 🚕
 
-A Fabric mod for **Minecraft 26.3** that adds a taxi service to your map.
+A Fabric mod for **Minecraft 26.1.2** that adds a taxi service to your map.
 
 Open the taxi map, put a marker on it, call a taxi, and a driver brings a vehicle to you. The map shows how long until it arrives and the route it takes. Get in and the driver takes you to the marker. **You can only travel to places you have already been**: unexplored areas are dark on the map, and the route only goes through explored chunks.
 
@@ -35,7 +35,7 @@ You can move the marker during the trip, and the driver rebuilds the route.
 
 - **Exploration memory**: every player keeps their own list of visited chunks per dimension. It survives restarts and death.
 - **Route only through explored places**: A* over the grid of explored chunks, then smoothed into a curve. If explored areas are not connected, you get "No route".
-- **Different vehicles**: a random boat of any wood type (oak, spruce, birch, jungle, acacia, cherry, dark oak, pale oak, mangrove, poplar) or a bamboo raft.
+- **Different vehicles**: a random boat of any wood type (oak, spruce, birch, jungle, acacia, cherry, dark oak, pale oak, mangrove) or a bamboo raft.
 - **Drivers** with names and ratings (★4.5–5.0), plates like `boat 36`, and a name tag above the vehicle.
 - The taxi glides over land and water, keeps its height over gaps, and drives through tree leaves.
 - **HUD card** in the top-right corner while you wait or ride.
@@ -52,7 +52,7 @@ You need **JDK 25**.
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/taxi-1.0.0.jar`. Put it in `mods/` along with [Fabric API](https://modrinth.com/mod/fabric-api) (0.165.0+26.3 or newer) and Fabric Loader 0.20.1+. The mod must be installed on **both the client and the server**.
+The jar ends up in `build/libs/taxi-1.0.0.jar`. Put it in `mods/` along with [Fabric API](https://modrinth.com/mod/fabric-api) (0.155.3+26.1.2 or newer) and Fabric Loader 0.20.1+. The mod must be installed on **both the client and the server**.
 
 ### Tests
 

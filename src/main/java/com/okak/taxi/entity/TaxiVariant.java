@@ -18,7 +18,6 @@ public enum TaxiVariant {
 	DARK_OAK("dark_oak", () -> Items.DARK_OAK_BOAT, false),
 	PALE_OAK("pale_oak", () -> Items.PALE_OAK_BOAT, false),
 	MANGROVE("mangrove", () -> Items.MANGROVE_BOAT, false),
-	POPLAR("poplar", () -> Items.POPLAR_BOAT, false),
 	BAMBOO("bamboo", () -> Items.BAMBOO_RAFT, true);
 
 	private static final TaxiVariant[] VALUES = values();

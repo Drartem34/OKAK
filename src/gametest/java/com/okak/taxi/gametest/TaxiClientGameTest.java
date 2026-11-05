@@ -37,7 +37,7 @@ public class TaxiClientGameTest implements FabricClientGameTest {
 				})
 				.create()) {
 			TestServerContext server = singleplayer.getServer();
-			singleplayer.getConnection().waitForChunksRender();
+			singleplayer.getClientLevel().waitForChunksRender();
 			server.runCommand("time set noon");
 			server.runCommand("weather clear");
 
@@ -65,7 +65,7 @@ public class TaxiClientGameTest implements FabricClientGameTest {
 			server.runCommand(String.format(Locale.ROOT, "tp @p %d 160 %d", start[0], start[1]));
 			context.waitTicks(10);
 			server.runCommand("execute as @p at @s positioned over motion_blocking_no_leaves run tp @s ~ ~ ~");
-			singleplayer.getConnection().waitForChunksRender();
+			singleplayer.getClientLevel().waitForChunksRender();
 
 			// 2. Open the map.
 			context.setScreen(TaxiMapScreen::new);

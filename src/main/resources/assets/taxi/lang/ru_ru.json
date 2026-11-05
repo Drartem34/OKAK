@@ -11,7 +11,6 @@
 	"entity.taxi.taxi_dark_oak": "Такси (лодка из тёмного дуба)",
 	"entity.taxi.taxi_pale_oak": "Такси (лодка из бледного дуба)",
 	"entity.taxi.taxi_mangrove": "Такси (мангровая лодка)",
-	"entity.taxi.taxi_poplar": "Такси (тополиная лодка)",
 	"entity.taxi.taxi_bamboo": "Такси (бамбуковый плот)",
 
 	"taxi.vehicle.oak": "Дубовая лодка",
@@ -23,7 +22,6 @@
 	"taxi.vehicle.dark_oak": "Лодка из тёмного дуба",
 	"taxi.vehicle.pale_oak": "Лодка из бледного дуба",
 	"taxi.vehicle.mangrove": "Мангровая лодка",
-	"taxi.vehicle.poplar": "Тополиная лодка",
 	"taxi.vehicle.bamboo": "Бамбуковый плот",
 
 	"taxi.driver.0": "Анна",

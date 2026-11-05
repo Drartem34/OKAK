@@ -11,7 +11,6 @@
 	"entity.taxi.taxi_dark_oak": "Таксі (човен з темного дуба)",
 	"entity.taxi.taxi_pale_oak": "Таксі (човен з блідого дуба)",
 	"entity.taxi.taxi_mangrove": "Таксі (мангровий човен)",
-	"entity.taxi.taxi_poplar": "Таксі (тополиний човен)",
 	"entity.taxi.taxi_bamboo": "Таксі (бамбуковий пліт)",
 
 	"taxi.vehicle.oak": "Дубовий човен",
@@ -23,7 +22,6 @@
 	"taxi.vehicle.dark_oak": "Човен з темного дуба",
 	"taxi.vehicle.pale_oak": "Човен з блідого дуба",
 	"taxi.vehicle.mangrove": "Мангровий човен",
-	"taxi.vehicle.poplar": "Тополиний човен",
 	"taxi.vehicle.bamboo": "Бамбуковий пліт",
 
 	"taxi.driver.0": "Анна",

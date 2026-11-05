@@ -47,8 +47,8 @@ public class TaxiModClient implements ClientModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (openMapKey.consumeClick()) {
-				if (client.player != null && client.gui.screen() == null) {
-					client.gui.setScreen(new TaxiMapScreen());
+				if (client.player != null && client.screen == null) {
+					client.setScreen(new TaxiMapScreen());
 				}
 			}
 		});
@@ -67,7 +67,6 @@ public class TaxiModClient implements ClientModInitializer {
 			case DARK_OAK -> ModelLayers.DARK_OAK_BOAT;
 			case PALE_OAK -> ModelLayers.PALE_OAK_BOAT;
 			case MANGROVE -> ModelLayers.MANGROVE_BOAT;
-			case POPLAR -> ModelLayers.POPLAR_BOAT;
 			case BAMBOO -> ModelLayers.BAMBOO_RAFT;
 		};
 	}

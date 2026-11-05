@@ -15,7 +15,7 @@ public final class TaxiHud {
 	public static void extract(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		Minecraft mc = Minecraft.getInstance();
 		TaxiStatusS2C status = ClientTaxiState.get();
-		if (!status.active() || mc.gui.screen() != null) {
+		if (!status.active() || mc.screen != null) {
 			return;
 		}
 
