@@ -26,6 +26,7 @@ import org.jspecify.annotations.Nullable;
  */
 public class TaxiEntity extends AbstractBoat {
 	private static final EntityDataAccessor<Boolean> DATA_MOVING = SynchedEntityData.defineId(TaxiEntity.class, EntityDataSerializers.BOOLEAN);
+	private static final EntityDataAccessor<Integer> DATA_COLOR = SynchedEntityData.defineId(TaxiEntity.class, EntityDataSerializers.INT);
 	private static final float PADDLE_SPEED = (float) (Math.PI / 8);
 
 	private final TaxiVariant variant;
@@ -46,6 +47,17 @@ public class TaxiEntity extends AbstractBoat {
 	protected void defineSynchedData(SynchedEntityData.Builder entityData) {
 		super.defineSynchedData(entityData);
 		entityData.define(DATA_MOVING, false);
+		entityData.define(DATA_COLOR, 0xFFFFFF);
+	}
+
+	/** Glow outline colour, depends on the taxi class (driver stars). */
+	public void setClassColor(int rgb) {
+		this.entityData.set(DATA_COLOR, rgb);
+	}
+
+	@Override
+	public int getTeamColor() {
+		return this.entityData.get(DATA_COLOR);
 	}
 
 	public void setMoving(boolean moving) {
@@ -139,7 +151,7 @@ public class TaxiEntity extends AbstractBoat {
 		if (this.level().isClientSide()) {
 			return true;
 		}
-		return this.getPassengers().isEmpty() && TaxiService.canBoard(this, passenger);
+		return this.getPassengers().size() < this.getMaxPassengers() && TaxiService.canBoard(this, passenger);
 	}
 
 	@Override

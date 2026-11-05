@@ -5,6 +5,7 @@ import com.okak.taxi.explore.ChunkKey;
 import com.okak.taxi.net.SetDestinationC2S;
 import com.okak.taxi.net.TaxiActionC2S;
 import com.okak.taxi.net.TaxiStatusS2C;
+import com.okak.taxi.service.TaxiClass;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -209,7 +210,7 @@ public class TaxiMapScreen extends Screen {
 			int tx = this.screenX(status.taxiX() + 0.5);
 			int ty = this.screenY(status.taxiZ() + 0.5);
 			graphics.fill(tx - 10, ty - 10, tx + 10, ty + 10, 0xFF1A1A2E);
-			graphics.fill(tx - 9, ty - 9, tx + 9, ty + 9, 0xFFFFC107);
+			graphics.fill(tx - 9, ty - 9, tx + 9, ty + 9, 0xFF000000 | TaxiClass.color(status.rating10()));
 			graphics.item(new ItemStack(TaxiVariant.byIndex(status.variant()).item.get()), tx - 8, ty - 8);
 		}
 
@@ -353,7 +354,10 @@ public class TaxiMapScreen extends Screen {
 			if (plateX + 70 < textRight - 40) {
 				this.extractPlate(graphics, status.plate(), plateX, driverY);
 			}
-			graphics.text(this.font, Component.translatable("taxi.vehicle." + variant.id), x, top + 46, COLOR_TEXT_MUTED, false);
+			Component classLine = Component.translatable("taxi.panel.vehicle_class", Component.translatable("taxi.vehicle." + variant.id),
+					Component.translatable(TaxiClass.nameKey(status.rating10())).withColor(darker(TaxiClass.color(status.rating10()))),
+					String.format(java.util.Locale.ROOT, "%.2f", TaxiClass.speedMultiplier(status.rating10())).replaceAll("0+$", "").replaceAll("\\.$", ""));
+			graphics.text(this.font, classLine, x, top + 46, COLOR_TEXT_MUTED, false);
 			if (line3 != null) {
 				graphics.text(this.font, line3, x, top + 57, COLOR_TEXT_MUTED, false);
 			}
@@ -375,6 +379,14 @@ public class TaxiMapScreen extends Screen {
 		if (this.localErrorTicks > 0) {
 			graphics.text(this.font, this.localError, x, top + 57, COLOR_ERROR, false);
 		}
+	}
+
+	/** Class colours are bright (for glow); darken them a bit for text on the white panel. */
+	private static int darker(int rgb) {
+		int r = (rgb >> 16 & 0xFF) * 3 / 4;
+		int g = (rgb >> 8 & 0xFF) * 3 / 4;
+		int b = (rgb & 0xFF) * 3 / 4;
+		return r << 16 | g << 8 | b;
 	}
 
 	private void extractScaledText(GuiGraphicsExtractor graphics, Component text, int x, int y, int maxWidth, int color) {

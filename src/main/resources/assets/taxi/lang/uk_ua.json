@@ -1,7 +1,6 @@
 {
 	"key.category.taxi.taxi": "Таксі",
 	"key.taxi.open_map": "Відкрити карту таксі",
-
 	"entity.taxi.taxi_oak": "Таксі (дубовий човен)",
 	"entity.taxi.taxi_spruce": "Таксі (ялиновий човен)",
 	"entity.taxi.taxi_birch": "Таксі (березовий човен)",
@@ -12,7 +11,6 @@
 	"entity.taxi.taxi_pale_oak": "Таксі (човен з блідого дуба)",
 	"entity.taxi.taxi_mangrove": "Таксі (мангровий човен)",
 	"entity.taxi.taxi_bamboo": "Таксі (бамбуковий пліт)",
-
 	"taxi.vehicle.oak": "Дубовий човен",
 	"taxi.vehicle.spruce": "Ялиновий човен",
 	"taxi.vehicle.birch": "Березовий човен",
@@ -23,7 +21,6 @@
 	"taxi.vehicle.pale_oak": "Човен з блідого дуба",
 	"taxi.vehicle.mangrove": "Мангровий човен",
 	"taxi.vehicle.bamboo": "Бамбуковий пліт",
-
 	"taxi.driver.0": "Анна",
 	"taxi.driver.1": "Олег",
 	"taxi.driver.2": "Марія",
@@ -36,14 +33,12 @@
 	"taxi.driver.9": "Віктор",
 	"taxi.driver.10": "Соломія",
 	"taxi.driver.11": "Дмитро",
-
 	"taxi.prefix": "[Таксі]",
 	"taxi.nameplate": "Таксі · %s ★%s · %s",
 	"taxi.time.seconds": "%s с",
 	"taxi.time.minutes": "%s хв %s с",
-
-	"taxi.msg.called": "Водій %s уже їде до тебе! Приїде приблизно через %s.",
-	"taxi.msg.arrived": "Таксі на місці! Водій %s (%s) чекає на тебе. Підійди й натисни ПКМ по човну.",
+	"taxi.msg.called": "Водій %1$s уже їде до тебе (%3$s)! Приїде приблизно через %2$s.",
+	"taxi.msg.arrived": "Таксі на місці й світиться! Водій %s (%s) чекає. Просто підійди до човна або натисни ПКМ.",
 	"taxi.msg.waiting": "Водій %s чекає на тебе біля зеленої мітки на карті",
 	"taxi.msg.timeout": "Водій %s не дочекався і поїхав. Виклич таксі ще раз.",
 	"taxi.msg.set_destination": "Постав мітку на карті (%s), куди їдемо?",
@@ -60,26 +55,22 @@
 	"taxi.msg.no_route": "Немає маршруту через досліджені місця.",
 	"taxi.msg.not_yours": "Це таксі замовив інший гравець.",
 	"taxi.msg.cannot_clear_riding": "Під час поїздки мітку можна лише перенести.",
-
 	"taxi.hud.approaching": "Таксі приїде через ~%s",
 	"taxi.hud.waiting": "Таксі чекає на тебе!",
 	"taxi.hud.riding": "В дорозі · ще ~%s",
 	"taxi.hud.driver": "%s ★%s · %s",
-
 	"taxi.map.title": "Таксі",
 	"taxi.map.empty": "Карта порожня — досліджуй світ!",
 	"taxi.map.zoom": "Чанк = %s px",
 	"taxi.map.hover_explored": "X %s  Z %s",
 	"taxi.map.hover_unexplored": "X %s  Z %s · не досліджено",
-
 	"taxi.button.call": "Викликати таксі",
 	"taxi.button.cancel": "Скасувати",
 	"taxi.button.center": "До мене",
 	"taxi.button.clear": "Без мітки",
-
 	"taxi.panel.approaching": "Через ~%s приїде",
 	"taxi.panel.waiting": "Таксі чекає на тебе!",
-	"taxi.panel.board": "Сідай: ПКМ по човну — і поїхали до мітки",
+	"taxi.panel.board": "Підійди до човна — і поїхали! Друг теж може сісти",
 	"taxi.panel.board_no_dest": "Сідай у човен і постав мітку на карті",
 	"taxi.panel.riding": "В дорозі · ще ~%s",
 	"taxi.panel.trip": "Поїздка: %s бл. · ~%s",
@@ -87,5 +78,15 @@
 	"taxi.panel.pick_destination": "Куди їдемо? Натисни на карту",
 	"taxi.panel.explored_only": "Таксі їздить лише туди, де ти вже був",
 	"taxi.panel.controls": "ЛКМ — мітка · ПКМ — прибрати · коліщатко — масштаб",
-	"taxi.panel.driver": "%s ★%s"
+	"taxi.panel.driver": "%s ★%s",
+	"taxi.msg.full": "У таксі вже немає вільних місць.",
+	"taxi.msg.friend_joined": "%s сів до тебе в таксі. Їдете разом!",
+	"taxi.msg.friend_joined_you": "Ти сів у таксі гравця %s. Він вирішує, куди їхати.",
+	"taxi.msg.left_friend": "Власник таксі вийшов, поїздку завершено.",
+	"taxi.class.1": "Черепаха",
+	"taxi.class.2": "Економ",
+	"taxi.class.3": "Стандарт",
+	"taxi.class.4": "Комфорт",
+	"taxi.class.5": "Преміум",
+	"taxi.panel.vehicle_class": "%s · %s · швидкість ×%s"
 }

@@ -1,7 +1,6 @@
 {
 	"key.category.taxi.taxi": "Taxi",
 	"key.taxi.open_map": "Open Taxi Map",
-
 	"entity.taxi.taxi_oak": "Taxi (Oak Boat)",
 	"entity.taxi.taxi_spruce": "Taxi (Spruce Boat)",
 	"entity.taxi.taxi_birch": "Taxi (Birch Boat)",
@@ -12,7 +11,6 @@
 	"entity.taxi.taxi_pale_oak": "Taxi (Pale Oak Boat)",
 	"entity.taxi.taxi_mangrove": "Taxi (Mangrove Boat)",
 	"entity.taxi.taxi_bamboo": "Taxi (Bamboo Raft)",
-
 	"taxi.vehicle.oak": "Oak Boat",
 	"taxi.vehicle.spruce": "Spruce Boat",
 	"taxi.vehicle.birch": "Birch Boat",
@@ -23,7 +21,6 @@
 	"taxi.vehicle.pale_oak": "Pale Oak Boat",
 	"taxi.vehicle.mangrove": "Mangrove Boat",
 	"taxi.vehicle.bamboo": "Bamboo Raft",
-
 	"taxi.driver.0": "Anna",
 	"taxi.driver.1": "Oleg",
 	"taxi.driver.2": "Maria",
@@ -36,14 +33,12 @@
 	"taxi.driver.9": "Viktor",
 	"taxi.driver.10": "Solomiia",
 	"taxi.driver.11": "Dmytro",
-
 	"taxi.prefix": "[Taxi]",
 	"taxi.nameplate": "Taxi · %s ★%s · %s",
 	"taxi.time.seconds": "%s s",
 	"taxi.time.minutes": "%s min %s s",
-
-	"taxi.msg.called": "%s is on the way! Arriving in about %s.",
-	"taxi.msg.arrived": "%s has arrived (%s) and is waiting for you! Walk up and right-click the boat.",
+	"taxi.msg.called": "%1$s is on the way (%3$s)! Arriving in about %2$s.",
+	"taxi.msg.arrived": "Your taxi is here and glowing! %s (%s) is waiting. Just walk up to the boat or right-click it.",
 	"taxi.msg.waiting": "%s is waiting for you at the green marker on the map",
 	"taxi.msg.timeout": "%s got tired of waiting and left. Call a taxi again.",
 	"taxi.msg.set_destination": "Put a marker on the map (%s) - where are we going?",
@@ -60,26 +55,22 @@
 	"taxi.msg.no_route": "No route through explored places.",
 	"taxi.msg.not_yours": "Another player ordered this taxi.",
 	"taxi.msg.cannot_clear_riding": "During a trip the marker can only be moved.",
-
 	"taxi.hud.approaching": "Taxi arrives in ~%s",
 	"taxi.hud.waiting": "Your taxi is waiting!",
 	"taxi.hud.riding": "On the way · ~%s left",
 	"taxi.hud.driver": "%s ★%s · %s",
-
 	"taxi.map.title": "Taxi",
 	"taxi.map.empty": "The map is empty - go explore!",
 	"taxi.map.zoom": "Chunk = %s px",
 	"taxi.map.hover_explored": "X %s  Z %s",
 	"taxi.map.hover_unexplored": "X %s  Z %s · unexplored",
-
 	"taxi.button.call": "Call a taxi",
 	"taxi.button.cancel": "Cancel",
 	"taxi.button.center": "Center",
 	"taxi.button.clear": "No marker",
-
 	"taxi.panel.approaching": "Arriving in ~%s",
 	"taxi.panel.waiting": "Your taxi is waiting!",
-	"taxi.panel.board": "Right-click the boat to get in and go to the marker",
+	"taxi.panel.board": "Walk up to the boat and off you go! A friend can join too",
 	"taxi.panel.board_no_dest": "Get in the boat and put a marker on the map",
 	"taxi.panel.riding": "On the way · ~%s left",
 	"taxi.panel.trip": "Trip: %s blocks · ~%s",
@@ -87,5 +78,15 @@
 	"taxi.panel.pick_destination": "Where to? Click on the map",
 	"taxi.panel.explored_only": "Taxis only go where you've already been",
 	"taxi.panel.controls": "LMB - marker · RMB - remove · wheel - zoom",
-	"taxi.panel.driver": "%s ★%s"
+	"taxi.panel.driver": "%s ★%s",
+	"taxi.msg.full": "There are no free seats in this taxi.",
+	"taxi.msg.friend_joined": "%s got in with you. Riding together!",
+	"taxi.msg.friend_joined_you": "You got into %s's taxi. They choose where to go.",
+	"taxi.msg.left_friend": "The taxi owner got out, the trip is over.",
+	"taxi.class.1": "Turtle",
+	"taxi.class.2": "Economy",
+	"taxi.class.3": "Standard",
+	"taxi.class.4": "Comfort",
+	"taxi.class.5": "Premium",
+	"taxi.panel.vehicle_class": "%s · %s · speed ×%s"
 }

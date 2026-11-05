@@ -32,7 +32,7 @@ public final class TaxiHud {
 		int x = graphics.guiWidth() - width - 6;
 		int y = 6;
 		graphics.fill(x, y, x + width, y + 26, 0xE0FFFFFF);
-		graphics.fill(x, y, x + 3, y + 26, 0xFFFFC107);
+		graphics.fill(x, y, x + 3, y + 26, 0xFF000000 | com.okak.taxi.service.TaxiClass.color(status.rating10()));
 		graphics.text(font, title, x + 7, y + 4, 0xFF1A1A2E, false);
 		graphics.text(font, subtitle, x + 7, y + 15, 0xFF5A5A6E, false);
 	}

@@ -94,25 +94,23 @@ public class TaxiClientGameTest implements FabricClientGameTest {
 			context.setScreen(() -> null);
 
 			context.waitFor(mc -> ClientTaxiState.get().state() == TaxiStatusS2C.WAITING, 20 * 180);
-			context.waitTicks(20);
-			// Look at the taxi for a picture.
+			// Step next to the glowing taxi (like walking up to it) and look at it.
 			server.runOnServer(s -> {
 				ServerPlayer p = player(s);
 				TaxiEntity taxi = findTaxi(p);
 				check(taxi != null, "taxi entity should be spawned when it arrives");
+				check(taxi.hasGlowingTag(), "a waiting taxi should glow");
 				s.getCommands().performPrefixedCommand(s.createCommandSourceStack(), String.format(Locale.ROOT,
-						"tp %s ~ ~ ~ facing %.2f %.2f %.2f", p.getScoreboardName(), taxi.getX(), taxi.getY() + 0.4, taxi.getZ()));
+						"tp %s %.2f %.2f %.2f facing %.2f %.2f %.2f", p.getScoreboardName(), taxi.getX() + 2.0, taxi.getY(), taxi.getZ(),
+						taxi.getX(), taxi.getY() + 0.3, taxi.getZ()));
 			});
 			context.waitTicks(10);
 			context.takeScreenshot("04-taxi-arrived");
-
-			// 6. Get in - the trip starts automatically since a marker is set.
-			server.runOnServer(s -> {
-				ServerPlayer p = player(s);
-				TaxiEntity taxi = findTaxi(p);
-				check(taxi != null && TaxiService.onInteract(taxi, p), "boarding should succeed");
-				check(p.getVehicle() == taxi, "player should sit in the taxi");
-			});
+			// 6. Get in like a real player: right-click (often hits the grass/leaves covering the boat).
+			context.getInput().pressKey(options -> options.keyUse);
+			context.waitTicks(10);
+			boolean seated = server.computeOnServer(s -> player(s).getVehicle() instanceof TaxiEntity);
+			check(seated, "right-clicking the taxi should seat the player");
 			context.waitFor(mc -> ClientTaxiState.get().state() == TaxiStatusS2C.RIDING, 100);
 			context.waitTicks(60);
 			context.takeScreenshot("05-riding");

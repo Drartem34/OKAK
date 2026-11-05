@@ -18,6 +18,7 @@ import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -33,6 +34,10 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import java.util.ArrayList;
+import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -52,6 +57,8 @@ public final class TaxiService {
 	private static final int FINISH_TICKS = 40;
 	private static final int STATUS_INTERVAL = 10;
 	private static final int MAX_ROUTE_POINTS = 400;
+	/** Let the player admire the glowing taxi for a moment before hopping in automatically. */
+	private static final int AUTO_BOARD_DELAY = 60;
 
 	private enum State {
 		APPROACHING, WAITING, RIDING, FINISHED
@@ -84,6 +91,10 @@ public final class TaxiService {
 		@Nullable TaxiEntity entity;
 		double y;
 		float yaw;
+		/** Faster drivers for more stars. */
+		final double speedMul;
+		/** The owner hops in automatically when walking up to the taxi (re-armed after walking away). */
+		boolean autoBoardArmed = true;
 
 		Order(TaxiVariant variant, int driver, int rating10, String plate, ResourceKey<Level> dimension, double pickupX, double pickupZ, Route route) {
 			this.variant = variant;
@@ -94,7 +105,16 @@ public final class TaxiService {
 			this.pickupX = pickupX;
 			this.pickupZ = pickupZ;
 			this.route = route;
-			this.speed = APPROACH_SPEED;
+			this.speedMul = TaxiClass.speedMultiplier(rating10);
+			this.speed = APPROACH_SPEED * this.speedMul;
+		}
+
+		double approachSpeed() {
+			return APPROACH_SPEED * this.speedMul;
+		}
+
+		int color() {
+			return TaxiClass.color(this.rating10);
 		}
 
 		void setState(State state) {
@@ -153,7 +173,7 @@ public final class TaxiService {
 			session.preview = null;
 			order.route = route;
 			order.progress = 0;
-			order.speed = rideSpeed(route);
+			order.speed = rideSpeed(route) * order.speedMul;
 			message(player, Component.translatable("taxi.msg.route_changed", time(route.length() / order.speed)));
 			sendStatus(player);
 			return;
@@ -201,7 +221,7 @@ public final class TaxiService {
 
 		TaxiVariant variant = TaxiVariant.byIndex(random.nextInt(TaxiVariant.count()));
 		int driver = random.nextInt(DRIVER_COUNT);
-		int rating = random.nextInt(3) == 0 ? 50 - random.nextInt(6) : 50;
+		int rating = TaxiClass.randomRating10(random);
 		String plate = variant.plateWord() + " " + String.format(Locale.ROOT, "%02d", 1 + random.nextInt(99));
 		Order order = new Order(variant, driver, rating, plate, level.dimension(), player.getX(), player.getZ(), approach.route());
 		session.order = order;
@@ -211,7 +231,8 @@ public final class TaxiService {
 			session.preview = RouteFinder.findRoute(explored(player), order.pickupX, order.pickupZ, session.destination[0], session.destination[1]);
 		}
 
-		message(player, Component.translatable("taxi.msg.called", driverName(driver), time(approach.route().length() / APPROACH_SPEED)));
+		message(player, Component.translatable("taxi.msg.called", driverName(driver), time(approach.route().length() / order.approachSpeed()),
+				Component.translatable(TaxiClass.nameKey(rating)).withColor(TaxiClass.color(rating))));
 		sendStatus(player);
 	}
 
@@ -232,12 +253,19 @@ public final class TaxiService {
 
 	public static boolean canBoard(TaxiEntity taxi, Entity passenger) {
 		UUID owner = TAXI_OWNERS.get(taxi.getUUID());
-		if (owner == null || !owner.equals(passenger.getUUID())) {
+		if (owner == null || !(passenger instanceof ServerPlayer)) {
 			return false;
 		}
 		Session session = SESSIONS.get(owner);
-		return session != null && session.order != null && session.order.entity == taxi
-				&& (session.order.state == State.WAITING || session.order.state == State.APPROACHING);
+		if (session == null || session.order == null || session.order.entity != taxi) {
+			return false;
+		}
+		State state = session.order.state;
+		if (owner.equals(passenger.getUUID())) {
+			return state == State.WAITING || state == State.APPROACHING;
+		}
+		// A friend can take the second seat while the taxi waits.
+		return state == State.WAITING;
 	}
 
 	public static boolean onInteract(TaxiEntity taxi, ServerPlayer player) {
@@ -245,19 +273,19 @@ public final class TaxiService {
 		if (owner == null) {
 			return false;
 		}
-		if (!owner.equals(player.getUUID())) {
-			actionBar(player, Component.translatable("taxi.msg.not_yours").withStyle(ChatFormatting.RED));
-			return true;
-		}
 		Session session = SESSIONS.get(owner);
 		if (session == null || session.order == null || session.order.entity != taxi) {
 			return false;
 		}
 		Order order = session.order;
+		if (!owner.equals(player.getUUID())) {
+			return boardFriend(player, taxi, order, owner);
+		}
 		if (order.state == State.APPROACHING) {
 			// The player ran up to the taxi - the driver stops right here.
 			order.setState(State.WAITING);
 			taxi.setMoving(false);
+			taxi.setGlowingTag(true);
 		}
 		if (order.state != State.WAITING) {
 			return true;
@@ -271,6 +299,47 @@ public final class TaxiService {
 		return true;
 	}
 
+	private static boolean boardFriend(ServerPlayer friend, TaxiEntity taxi, Order order, UUID owner) {
+		if (order.state != State.WAITING || taxi.getPassengers().size() >= 2) {
+			actionBar(friend, Component.translatable(taxi.getPassengers().size() >= 2 ? "taxi.msg.full" : "taxi.msg.not_yours").withStyle(ChatFormatting.RED));
+			return true;
+		}
+		if (friend.isPassenger()) {
+			friend.stopRiding();
+		}
+		if (friend.startRiding(taxi)) {
+			ServerPlayer ownerPlayer = friend.level().getServer().getPlayerList().getPlayer(owner);
+			Component ownerName = ownerPlayer != null ? ownerPlayer.getDisplayName() : Component.literal("?");
+			message(friend, Component.translatable("taxi.msg.friend_joined_you", ownerName));
+			if (ownerPlayer != null) {
+				message(ownerPlayer, Component.translatable("taxi.msg.friend_joined", friend.getDisplayName()));
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Right-clicking a block right next to a taxi also gets you in - the boat sits low and grass,
+	 * flowers or snow layers easily cover it.
+	 */
+	public static boolean tryBoardNear(ServerPlayer player, Vec3 location) {
+		TaxiEntity taxi = nearestActiveTaxi(player.level(), location, 2.5);
+		return taxi != null && onInteract(taxi, player);
+	}
+
+	private static @Nullable TaxiEntity nearestActiveTaxi(ServerLevel level, Vec3 location, double radius) {
+		TaxiEntity best = null;
+		double bestDistance = Double.MAX_VALUE;
+		for (TaxiEntity taxi : level.getEntitiesOfClass(TaxiEntity.class, new AABB(location, location).inflate(radius))) {
+			double d = taxi.position().distanceToSqr(location);
+			if (isActiveTaxi(taxi) && d < bestDistance) {
+				best = taxi;
+				bestDistance = d;
+			}
+		}
+		return best;
+	}
+
 	public static void onPassengerRemoved(TaxiEntity taxi, Entity passenger) {
 		UUID owner = TAXI_OWNERS.get(taxi.getUUID());
 		if (owner == null || !owner.equals(passenger.getUUID())) {
@@ -280,9 +349,16 @@ public final class TaxiService {
 		if (session == null || session.order == null || session.order.entity != taxi) {
 			return;
 		}
+		if (session.order.state == State.WAITING) {
+			session.order.autoBoardArmed = false;
+		}
 		if (session.order.state == State.RIDING && passenger instanceof ServerPlayer player) {
 			session.order.setState(State.FINISHED);
 			taxi.setMoving(false);
+			for (ServerPlayer friend : playerPassengers(taxi)) {
+				message(friend, Component.translatable("taxi.msg.left_friend"));
+			}
+			taxi.ejectPassengers();
 			message(player, Component.translatable("taxi.msg.left"));
 			sendStatus(player);
 		}
@@ -375,7 +451,7 @@ public final class TaxiService {
 		double total = order.route.length();
 		double remaining = total - order.progress;
 		double factor = Mth.clamp(remaining / 16.0, 0.25, 1.0);
-		order.progress = Math.min(total, order.progress + APPROACH_SPEED * factor);
+		order.progress = Math.min(total, order.progress + order.approachSpeed() * factor);
 
 		if (order.entity == null && total - order.progress <= SPAWN_DISTANCE) {
 			trySpawn(order, level, player, order.route.at(order.progress));
@@ -383,6 +459,7 @@ public final class TaxiService {
 		if (order.entity != null) {
 			order.entity.setMoving(true);
 			moveEntity(order, level);
+			trail(order, level);
 		}
 
 		if (order.progress >= total) {
@@ -391,6 +468,8 @@ public final class TaxiService {
 			}
 			if (order.entity != null) {
 				order.entity.setMoving(false);
+				order.entity.setGlowingTag(true);
+				arrivalEffect(order, level);
 			}
 			order.setState(State.WAITING);
 			message(player, Component.translatable("taxi.msg.arrived", driverName(order.driver), Component.translatable("taxi.vehicle." + order.variant.id)));
@@ -407,6 +486,13 @@ public final class TaxiService {
 		TaxiEntity taxi = order.entity;
 		if (taxi != null) {
 			taxi.setMoving(false);
+			taxi.setGlowingTag(true);
+			double distanceSq = player.distanceToSqr(taxi);
+			if (distanceSq > 9.0) {
+				order.autoBoardArmed = true;
+			} else if (order.autoBoardArmed && order.stateTicks > AUTO_BOARD_DELAY && distanceSq < 2.25 && !player.isPassenger() && !player.isShiftKeyDown()) {
+				onInteract(taxi, player);
+			}
 			if (taxi.hasPassenger(player)) {
 				if (session.destination != null) {
 					startRide(player, session, order);
@@ -439,13 +525,17 @@ public final class TaxiService {
 		}
 		order.route = route;
 		order.progress = 0;
-		order.speed = rideSpeed(route);
+		order.speed = rideSpeed(route) * order.speedMul;
 		order.y = taxi.getY();
 		order.yaw = taxi.getYRot();
 		order.setState(State.RIDING);
 		session.preview = null;
 		taxi.setMoving(true);
-		message(player, Component.translatable("taxi.msg.ride_started", time(route.length() / order.speed)));
+		taxi.setGlowingTag(false);
+		Component started = Component.translatable("taxi.msg.ride_started", time(route.length() / order.speed));
+		for (ServerPlayer rider : playerPassengers(taxi)) {
+			message(rider, started);
+		}
 		sendStatus(player);
 	}
 
@@ -459,15 +549,20 @@ public final class TaxiService {
 		double factor = Mth.clamp(Math.min(order.progress + 4.0, remaining) / 20.0, 0.2, 1.0);
 		order.progress = Math.min(total, order.progress + order.speed * factor);
 		moveEntity(order, level);
+		trail(order, level);
 
 		if (order.progress >= total) {
 			TaxiEntity taxi = order.entity;
 			order.setState(State.FINISHED);
 			taxi.setMoving(false);
+			List<ServerPlayer> riders = playerPassengers(taxi);
 			taxi.ejectPassengers();
 			session.destination = null;
 			session.preview = null;
-			message(player, Component.translatable("taxi.msg.trip_done", driverName(order.driver)));
+			for (ServerPlayer rider : riders) {
+				message(rider, Component.translatable("taxi.msg.trip_done", driverName(order.driver)));
+			}
+			arrivalEffect(order, level);
 			level.playSound(null, taxi.getX(), taxi.getY(), taxi.getZ(), SoundEvents.PLAYER_LEVELUP, SoundSource.NEUTRAL, 0.6F, 1.4F);
 			sendStatus(player);
 		}
@@ -500,8 +595,9 @@ public final class TaxiService {
 		taxi.setInitialPos(pos[0], order.y, pos[1]);
 		taxi.setYRot(order.yaw);
 		taxi.setCustomName(Component.translatable("taxi.nameplate", driverName(order.driver), rating(order.rating10), order.plate)
-				.withStyle(ChatFormatting.YELLOW));
+				.withColor(order.color()));
 		taxi.setCustomNameVisible(true);
+		taxi.setClassColor(order.color());
 		if (level.addFreshEntity(taxi)) {
 			order.entity = taxi;
 			TAXI_OWNERS.put(taxi.getUUID(), owner.getUUID());
@@ -548,6 +644,36 @@ public final class TaxiService {
 			return height - 0.15;
 		}
 		return height;
+	}
+
+	private static void trail(Order order, ServerLevel level) {
+		TaxiEntity taxi = order.entity;
+		if (taxi != null && taxi.tickCount % 2 == 0) {
+			level.sendParticles(new DustParticleOptions(order.color(), 1.2F), taxi.getX(), taxi.getY() + 0.3, taxi.getZ(), 3, 0.35, 0.1, 0.35, 0.0);
+		}
+	}
+
+	private static void arrivalEffect(Order order, ServerLevel level) {
+		TaxiEntity taxi = order.entity;
+		if (taxi == null) {
+			return;
+		}
+		DustParticleOptions dust = new DustParticleOptions(order.color(), 1.6F);
+		for (int i = 0; i < 24; i++) {
+			double angle = Math.PI * 2 * i / 24;
+			level.sendParticles(dust, taxi.getX() + Math.cos(angle) * 1.4, taxi.getY() + 0.4, taxi.getZ() + Math.sin(angle) * 1.4, 1, 0, 0.15, 0, 0.0);
+		}
+		level.sendParticles(ParticleTypes.END_ROD, taxi.getX(), taxi.getY() + 0.8, taxi.getZ(), 12, 0.4, 0.4, 0.4, 0.03);
+	}
+
+	private static List<ServerPlayer> playerPassengers(TaxiEntity taxi) {
+		List<ServerPlayer> result = new ArrayList<>();
+		for (Entity passenger : taxi.getPassengers()) {
+			if (passenger instanceof ServerPlayer p) {
+				result.add(p);
+			}
+		}
+		return result;
 	}
 
 	private static void removeTaxi(Order order) {
@@ -615,14 +741,14 @@ public final class TaxiService {
 		switch (order.state) {
 			case APPROACHING -> {
 				state = TaxiStatusS2C.APPROACHING;
-				eta = (int) (remaining / APPROACH_SPEED);
+				eta = (int) (remaining / order.approachSpeed());
 				distance = (int) remaining;
 				points = order.route.remainingPoints(order.progress, MAX_ROUTE_POINTS);
 			}
 			case WAITING -> {
 				state = TaxiStatusS2C.WAITING;
 				if (session.preview != null) {
-					eta = (int) (session.preview.length() / rideSpeed(session.preview));
+					eta = (int) (session.preview.length() / (rideSpeed(session.preview) * order.speedMul));
 					distance = (int) session.preview.length();
 					points = session.preview.remainingPoints(0, MAX_ROUTE_POINTS);
 				}

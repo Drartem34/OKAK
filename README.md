@@ -15,14 +15,14 @@ Open the taxi map, put a marker on it, call a taxi, and a driver brings a vehicl
 | Remove the marker | Right-click on the map, or the **No marker** button |
 | Zoom / pan | Mouse wheel / drag with the left button |
 | Call a taxi | **Call a taxi** button |
-| Get in | Right-click the boat when it arrives |
+| Get in | Walk up to the glowing boat, or right-click it (or the grass next to it) |
 | Get out early | Shift, the usual way (this ends the trip) |
 
 1. Explore the world. Everything within about 2 chunks of you is saved to the map.
 2. Press **Y**. The map shows only the places you have been, in vanilla map colours.
 3. Click where you want to go. A red route and the trip time appear.
 4. Press **Call a taxi**. You see "Arriving in ~30 s", the driver's name and rating, the plate (`boat 36`) and the taxi icon moving along the route.
-5. When the taxi arrives (a bell sound, and a message in chat), right-click it. The trip starts on its own.
+5. When the taxi arrives, it **glows** in its class colour, with a bell sound and a burst of particles. Walk up to it (or right-click) and the trip starts on its own. A **friend** can take the second seat.
 6. At the marker the driver drops you off and the taxi disappears.
 
 You can move the marker during the trip, and the driver rebuilds the route.
@@ -36,11 +36,20 @@ You can move the marker during the trip, and the driver rebuilds the route.
 - **Exploration memory**: every player keeps their own list of visited chunks per dimension. It survives restarts and death.
 - **Route only through explored places**: A* over the grid of explored chunks, then smoothed into a curve. If explored areas are not connected, you get "No route".
 - **Different vehicles**: a random boat of any wood type (oak, spruce, birch, jungle, acacia, cherry, dark oak, pale oak, mangrove) or a bamboo raft.
-- **Drivers** with names and ratings (★4.5–5.0), plates like `boat 36`, and a name tag above the vehicle.
+- **Taxi classes by stars**: the driver's rating decides the glow colour, trail particles and speed:
+  | Stars | Class | Colour | Speed |
+  |---|---|---|---|
+  | ★1 | Turtle | red | ×0.6 |
+  | ★2 | Economy | orange | ×0.8 |
+  | ★3 | Standard | blue | ×1.0 |
+  | ★4 | Comfort | green | ×1.25 |
+  | ★5 | Premium | gold | ×1.5 |
+- **Ride with a friend**: the boat has two seats. A friend can get in while the taxi waits, and both of you are dropped off at the marker.
+- **Drivers** with names and ratings, plates like `boat 36`, and a name tag above the vehicle.
 - The taxi glides over land and water, keeps its height over gaps, and drives through tree leaves.
 - **HUD card** in the top-right corner while you wait or ride.
-- Languages: Ukrainian, Russian, English.
-- Multiplayer: each player has their own taxi and map. Other players cannot board your taxi.
+- Languages: Ukrainian, Russian, English, Polish, German, Spanish.
+- Multiplayer: each player has their own taxi and map; only the owner picks the destination.
 
 Taxis don't work in the Nether (the bedrock roof blocks navigation). The Overworld and the End are supported.
 
@@ -52,7 +61,7 @@ You need **JDK 25**.
 ./gradlew build
 ```
 
-The jar ends up in `build/libs/taxi-1.0.0.jar`. Put it in `mods/` along with [Fabric API](https://modrinth.com/mod/fabric-api) (0.155.3+26.1.2 or newer) and Fabric Loader 0.20.1+. The mod must be installed on **both the client and the server**.
+The jar ends up in `build/libs/taxi-1.1.0.jar`. Put it in `mods/` along with [Fabric API](https://modrinth.com/mod/fabric-api) (0.155.3+26.1.2 or newer) and Fabric Loader 0.20.1+. The mod must be installed on **both the client and the server**.
 
 ### Tests
 
