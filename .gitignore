@@ -10,3 +10,4 @@ bin/
 *.iws
 .vscode/
 .DS_Store
+dist/
