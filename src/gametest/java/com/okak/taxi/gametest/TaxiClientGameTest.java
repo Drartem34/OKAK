@@ -64,7 +64,7 @@ public class TaxiClientGameTest implements FabricClientGameTest {
 			// Back to the start, standing on the ground.
 			server.runCommand(String.format(Locale.ROOT, "tp @p %d 160 %d", start[0], start[1]));
 			context.waitTicks(10);
-			server.runCommand("execute as @p at @s positioned over motion_blocking run tp @s ~ ~ ~");
+			server.runCommand("execute as @p at @s positioned over motion_blocking_no_leaves run tp @s ~ ~ ~");
 			singleplayer.getConnection().waitForChunksRender();
 
 			// 2. Open the map.

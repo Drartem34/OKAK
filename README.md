@@ -4,6 +4,8 @@ A Fabric mod for **Minecraft 26.3** that adds a taxi service to your map.
 
 Open the taxi map, put a marker on it, call a taxi, and a driver brings a vehicle to you. The map shows how long until it arrives and the route it takes. Get in and the driver takes you to the marker. **You can only travel to places you have already been**: unexplored areas are dark on the map, and the route only goes through explored chunks.
 
+![Taxi on the way](docs/approaching.png)
+
 ## How to play
 
 | Action | How |
@@ -25,13 +27,17 @@ Open the taxi map, put a marker on it, call a taxi, and a driver brings a vehicl
 
 You can move the marker during the trip, and the driver rebuilds the route.
 
+| Explored map | Riding to the marker |
+|---|---|
+| ![](docs/map.png) | ![](docs/riding-map.png) |
+
 ## Features
 
 - **Exploration memory**: every player keeps their own list of visited chunks per dimension. It survives restarts and death.
 - **Route only through explored places**: A* over the grid of explored chunks, then smoothed into a curve. If explored areas are not connected, you get "No route".
 - **Different vehicles**: a random boat of any wood type (oak, spruce, birch, jungle, acacia, cherry, dark oak, pale oak, mangrove, poplar) or a bamboo raft.
 - **Drivers** with names and ratings (★4.5–5.0), plates like `boat 36`, and a name tag above the vehicle.
-- The taxi glides over land and water, keeps its height over gaps, and passes through trees.
+- The taxi glides over land and water, keeps its height over gaps, and drives through tree leaves.
 - **HUD card** in the top-right corner while you wait or ride.
 - Languages: Ukrainian, Russian, English.
 - Multiplayer: each player has their own taxi and map. Other players cannot board your taxi.

@@ -39,10 +39,11 @@ public class TaxiModClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(ChunkDataS2C.TYPE, (payload, context) -> ClientMapData.accept(payload));
 		ClientPlayNetworking.registerGlobalReceiver(TaxiStatusS2C.TYPE, (payload, context) -> ClientTaxiState.update(payload));
 
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+		// May fire on the network thread; textures must be released on the render thread.
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> client.execute(() -> {
 			ClientMapData.clear();
 			ClientTaxiState.reset();
-		});
+		}));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (openMapKey.consumeClick()) {

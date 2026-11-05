@@ -533,14 +533,14 @@ public final class TaxiService {
 		taxi.setYRot(order.yaw);
 	}
 
-	/** Height the boat should sit at: on top of the ground, floating on water, keeping height over the void. */
+	/** Height the boat should sit at: on the ground (through tree leaves), floating on water, keeping height over the void. */
 	private static double surfaceY(ServerLevel level, double x, double z, double fallback) {
 		int bx = Mth.floor(x);
 		int bz = Mth.floor(z);
 		if (!level.hasChunk(bx >> 4, bz >> 4)) {
 			level.getChunk(bx >> 4, bz >> 4);
 		}
-		int height = level.getHeight(Heightmap.Types.MOTION_BLOCKING, bx, bz);
+		int height = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, bx, bz);
 		if (height <= level.getMinY()) {
 			return fallback;
 		}
